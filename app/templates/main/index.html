@@ -4,73 +4,120 @@
 <div class="chat-container">
     <!-- Contacts Sidebar -->
     <div class="contacts-sidebar">
-        <div class="p-3 border-bottom">
-            <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#addContactModal">
-                <i class="bi bi-person-plus"></i> Add Contact
+        <div class="contacts-header">
+            <h5><i class="bi bi-chat-dots me-2"></i>Chats</h5>
+            <button type="button" class="btn add-contact-btn mt-3" data-bs-toggle="modal" data-bs-target="#addContactModal">
+                <i class="bi bi-person-plus me-2"></i>Add New Contact
             </button>
         </div>
-        <div class="list-group list-group-flush" id="contacts-list">
+        
+        <div class="contacts-list" id="contacts-list">
             {% for contact in contacts %}
-            <a href="#" class="list-group-item list-group-item-action contact-item" data-phone="{{ contact.contact_phone }}">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="mb-1 contact-name">Loading...</h6>
-                        <small class="text-body-secondary contact-phone">{{ contact.contact_phone }}</small>
-                    </div>
+            <a href="#" class="contact-item" data-phone="{{ contact.contact_phone }}">
+                <div class="contact-avatar">
+                    {{ contact.contact_phone[0] if contact.contact_phone else '?' }}
+                </div>
+                <div class="contact-info">
+                    <h6 class="contact-name">Loading...</h6>
+                    <p class="contact-phone">{{ contact.contact_phone }}</p>
                 </div>
             </a>
             {% endfor %}
+            
+            {% if not contacts %}
+            <div class="text-center p-4">
+                <i class="bi bi-people" style="font-size: 3rem; color: var(--text-secondary); opacity: 0.5;"></i>
+                <p class="mt-3" style="color: var(--text-secondary);">No contacts yet</p>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Add a contact to start chatting</p>
+            </div>
+            {% endif %}
         </div>
     </div>
 
     <!-- Chat Main Area -->
     <div class="chat-main" id="chat-main">
-        <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
-            <div>
-                <h5 class="mb-0" id="current-chat-name">Select a contact</h5>
+        <!-- Welcome Screen (shown when no chat is selected) -->
+        <div class="welcome-screen" id="welcome-screen">
+            <div class="welcome-icon">💬</div>
+            <h3 class="welcome-title">WhatsChat Web</h3>
+            <p class="welcome-subtitle">Send and receive messages without keeping your phone online.<br>
+            Select a contact from the sidebar to start messaging.</p>
+        </div>
+
+        <!-- Chat Header (hidden initially) -->
+        <div class="chat-header d-none" id="chat-header">
+            <div class="chat-header-avatar" id="chat-avatar">?</div>
+            <div class="chat-header-info">
+                <h5 id="current-chat-name">Contact Name</h5>
             </div>
         </div>
-        <div class="chat-messages" id="chat-messages"></div>
-        <div class="chat-input">
-            <form id="message-form" class="d-none">
+
+        <!-- Chat Messages (hidden initially) -->
+        <div class="chat-messages d-none" id="chat-messages">
+            <!-- Messages will be populated here -->
+        </div>
+
+        <!-- Chat Input (hidden initially) -->
+        <div class="chat-input d-none" id="chat-input-container">
+            <form id="message-form" class="w-100">
                 <div class="input-group">
-                    <label class="btn btn-outline-secondary" for="file-upload">
+                    <button type="button" class="input-btn" id="attach-btn">
                         <i class="bi bi-paperclip"></i>
-                    </label>
-                    <input type="file" id="file-upload" class="d-none">
-                    <input type="text" class="form-control" id="message-input" placeholder="Type a message...">
-                    <button class="btn btn-primary" type="submit">
+                    </button>
+                    <input type="file" id="file-upload" class="d-none" accept="image/*,video/*,audio/*,.pdf,.doc,.docx">
+                    
+                    <textarea 
+                        class="message-input" 
+                        id="message-input" 
+                        placeholder="Type a message..."
+                        rows="1"></textarea>
+                    
+                    <button type="button" class="input-btn" id="emoji-btn">
+                        <i class="bi bi-emoji-smile"></i>
+                    </button>
+                    
+                    <button type="submit" class="input-btn send-btn" id="send-btn">
                         <i class="bi bi-send"></i>
                     </button>
                 </div>
             </form>
-            <div id="offline-message" class="text-center text-body-secondary">
-                Select a contact to start messaging
-            </div>
         </div>
     </div>
 </div>
 
 <!-- Add Contact Modal -->
 <div class="modal fade" id="addContactModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add New Contact</h5>
+                <h5 class="modal-title">
+                    <i class="bi bi-person-plus me-2"></i>Add New Contact
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="add-contact-form">
                     <div class="mb-3">
-                        <label for="contact-phone" class="form-label">Phone Number</label>
-                        <input type="text" class="form-control" id="contact-phone" required
-                               placeholder="Enter phone number with country code">
+                        <label for="contact-phone" class="form-label">
+                            <i class="bi bi-telephone me-1"></i>Phone Number
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="contact-phone" 
+                            required
+                            placeholder="Enter phone number with country code (e.g., +1234567890)">
+                        <div class="form-text">Include country code for international numbers</div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="add-contact-btn">Add Contact</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-2"></i>Cancel
+                </button>
+                <button type="button" class="btn btn-success" id="add-contact-btn">
+                    <i class="bi bi-check-circle me-2"></i>Add Contact
+                </button>
             </div>
         </div>
     </div>
@@ -86,16 +133,36 @@
         reconnectionDelay: 1000,
         reconnectionDelayMax: 5000
     });
+    
     let currentContact = null;
-    let lastMessageId = null;  // Track last message to prevent duplicates
+    let lastMessageId = null;
+    
+    // DOM elements
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const chatHeader = document.getElementById('chat-header');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInputContainer = document.getElementById('chat-input-container');
+    const messageInput = document.getElementById('message-input');
+    const fileUpload = document.getElementById('file-upload');
+    const attachBtn = document.getElementById('attach-btn');
+    const sendBtn = document.getElementById('send-btn');
+    const addContactBtn = document.getElementById('add-contact-btn');
+    const contactPhoneInput = document.getElementById('contact-phone');
     
     // Socket connection handlers
     socket.on('connect', function() {
         console.log('Connected to server');
+        showConnectionStatus('Connected', 'success');
     });
     
     socket.on('disconnect', function() {
         console.log('Disconnected from server');
+        showConnectionStatus('Disconnected', 'warning');
+    });
+
+    socket.on('reconnect', function() {
+        console.log('Reconnected to server');
+        showConnectionStatus('Reconnected', 'success');
     });
 
     // Handle incoming messages
@@ -107,7 +174,10 @@
                 id: message.id,
                 content: message.content,
                 timestamp: formatLocalTime(message.timestamp),
-                is_sender: message.sender_phone === '{{ current_user.phone_number }}'
+                is_sender: message.sender_phone === '{{ current_user.phone_number }}',
+                is_file: message.is_file,
+                file_type: message.file_type,
+                file_name: message.file_name
             });
         }
     });
@@ -123,14 +193,49 @@
         }
     });
 
-    // Load contact details
+    // Auto-resize message input
+    messageInput.addEventListener('input', function() {
+        autoResize(this);
+        
+        // Show/hide send button based on content
+        if (this.value.trim()) {
+            sendBtn.querySelector('i').classList.replace('bi-send', 'bi-send-fill');
+            sendBtn.style.background = 'var(--wa-green)';
+        } else {
+            sendBtn.querySelector('i').classList.replace('bi-send-fill', 'bi-send');
+            sendBtn.style.background = 'var(--text-secondary)';
+        }
+    });
+
+    // Handle Enter key for sending messages
+    messageInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+
+    // Load contact details with enhanced UI
     function loadContactDetails(contactItem) {
         const phone = contactItem.dataset.phone;
         fetch(`/get_contact_details/${phone}`)
             .then(response => response.json())
             .then(data => {
                 const nameElement = contactItem.querySelector('.contact-name');
-                nameElement.textContent = data.display_name;
+                const avatarElement = contactItem.querySelector('.contact-avatar');
+                
+                nameElement.textContent = data.display_name || phone;
+                avatarElement.textContent = data.display_name ? data.display_name[0].upper() : phone[0];
+                
+                // Add online status indicator (if available)
+                if (data.online_status) {
+                    contactItem.classList.add('contact-online');
+                }
+            })
+            .catch(error => {
+                console.error('Error loading contact details:', error);
+                const nameElement = contactItem.querySelector('.contact-name');
+                nameElement.textContent = phone;
             });
     }
 
@@ -140,133 +245,176 @@
     }
 
     // Set up periodic status updates
-    setInterval(updateAllContactStatuses, 5000);
+    setInterval(updateAllContactStatuses, 10000);
 
-    // Handle contact selection
+    // Handle contact selection with enhanced animation
     document.querySelectorAll('.contact-item').forEach(item => {
-        item.addEventListener('click', function() {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
             const phone = this.dataset.phone;
-            currentContact = phone;
-            
-            // Update UI
-            document.querySelectorAll('.contact-item').forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
-            
-            const name = this.querySelector('.contact-name').textContent;
-            document.getElementById('current-chat-name').textContent = name;
-            
-            // Show/hide appropriate elements
-            document.getElementById('message-form').classList.remove('d-none');
-            document.getElementById('offline-message').classList.add('d-none');
-            
-            // Load messages
-            loadMessages(phone);
+            selectContact(phone, this);
         });
         
         // Load initial contact details
         loadContactDetails(item);
     });
 
-    // Load messages for a contact
+    function selectContact(phone, contactElement) {
+        currentContact = phone;
+        
+        // Update active contact
+        document.querySelectorAll('.contact-item').forEach(i => i.classList.remove('active'));
+        contactElement.classList.add('active');
+        
+        // Get contact info
+        const name = contactElement.querySelector('.contact-name').textContent;
+        const avatar = contactElement.querySelector('.contact-avatar').textContent;
+        
+        // Update chat header
+        document.getElementById('current-chat-name').textContent = name;
+        document.getElementById('chat-avatar').textContent = avatar;
+        
+        // Show chat interface
+        welcomeScreen.classList.add('d-none');
+        chatHeader.classList.remove('d-none');
+        chatMessages.classList.remove('d-none');
+        chatInputContainer.classList.remove('d-none');
+        
+        // Load messages
+        loadMessages(phone);
+        
+        // Focus message input
+        setTimeout(() => messageInput.focus(), 100);
+    }
+
+    // Load messages with enhanced UI
     function loadMessages(phone) {
+        // Show loading state
+        chatMessages.innerHTML = '<div class="text-center p-4"><div class="spinner-border text-success" role="status"></div></div>';
+        
         fetch(`/get_messages/${phone}`)
             .then(response => response.json())
             .then(messages => {
-                const chatMessages = document.getElementById('chat-messages');
                 chatMessages.innerHTML = '';
                 messages.forEach(message => {
                     message.timestamp = formatLocalTime(message.timestamp);
                     appendMessage(message);
                 });
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+                scrollToBottom(chatMessages, false);
+            })
+            .catch(error => {
+                console.error('Error loading messages:', error);
+                chatMessages.innerHTML = '<div class="text-center p-4 text-danger">Failed to load messages</div>';
             });
     }
 
-    // Append a message to the chat
+    // Append message with enhanced styling
     function appendMessage(message) {
-        // Prevent duplicate messages
-        if (message.id === lastMessageId) {
-            return;
-        }
+        if (message.id === lastMessageId) return;
         lastMessageId = message.id;
 
-        const chatMessages = document.getElementById('chat-messages');
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${message.is_sender ? 'message-sent' : 'message-received'}`;
         messageDiv.dataset.messageId = message.id;
 
         let content = message.content;
+        
         if (message.is_file) {
             if (message.file_type === 'image') {
-                content = `<img src="/uploads/${message.content}" class="img-fluid" alt="Image">`;
+                content = `<img src="/uploads/${message.content}" class="img-fluid file-preview" alt="Image" style="max-width: 250px; border-radius: 8px;">`;
             } else {
-                content = `<a href="/uploads/${message.content}" target="_blank" class="btn btn-sm btn-outline-primary">
-                            <i class="bi bi-file-earmark"></i> ${message.file_name || message.content}
-                          </a>`;
+                content = `
+                    <div class="file-attachment">
+                        <i class="bi bi-file-earmark${getFileIcon(message.file_type)}"></i>
+                        <div>
+                            <div style="font-weight: 500;">${message.file_name || message.content}</div>
+                            <small style="opacity: 0.7;">${message.file_type.toUpperCase()} file</small>
+                        </div>
+                    </div>
+                `;
             }
         }
 
         messageDiv.innerHTML = `
-            <div class="message-content">${content}</div>
-            <div class="message-time">
-                ${message.timestamp}
+            <div class="message-bubble">
+                <div class="message-content">${content}</div>
+                <div class="message-time">
+                    ${message.timestamp}
+                    ${message.is_sender ? '<span class="message-status"><i class="bi bi-check"></i></span>' : ''}
+                </div>
             </div>
         `;
+        
         chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        scrollToBottom(chatMessages);
     }
 
-    // Get status icon based on message status
-    function getStatusIcon(status) {
-        switch(status) {
-            case 'sending':
-                return '<i class="bi bi-clock" title="Sending..."></i>';
-            case 'sent':
-                return '<i class="bi bi-check" title="Sent"></i>';
-            case 'delivered':
-                return '<i class="bi bi-check-all" title="Delivered"></i>';
-            case 'read':
-                return '<i class="bi bi-check-all text-primary" title="Read"></i>';
-            case 'failed':
-                return '<i class="bi bi-exclamation-circle text-danger" title="Failed to send"></i>';
-            default:
-                return '<i class="bi bi-clock" title="Sending..."></i>';
-        }
+    // Get appropriate file icon
+    function getFileIcon(fileType) {
+        const iconMap = {
+            'pdf': '-pdf',
+            'doc': '-word',
+            'docx': '-word',
+            'video': '-play',
+            'audio': '-music',
+            'image': '-image'
+        };
+        return iconMap[fileType] || '';
     }
 
-    // Convert UTC to local time
-    function formatLocalTime(timestamp) {
-        const date = new Date(timestamp.replace(' ', 'T') + 'Z');
-        return date.toLocaleString();
+    // Enhanced message sending
+    function sendMessage() {
+        const message = messageInput.value.trim();
+        if (!message || !currentContact) return;
+        
+        // Add sending animation
+        sendBtn.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div>';
+        sendBtn.disabled = true;
+        
+        socket.emit('send_message', {
+            receiver_phone: currentContact,
+            message: message
+        });
+        
+        messageInput.value = '';
+        autoResize(messageInput);
+        
+        // Reset send button
+        setTimeout(() => {
+            sendBtn.innerHTML = '<i class="bi bi-send"></i>';
+            sendBtn.disabled = false;
+            sendBtn.style.background = 'var(--text-secondary)';
+        }, 500);
     }
 
-    // Update message status indicator
-    function updateMessageStatus(statusElement, status) {
-        statusElement.innerHTML = getStatusIcon(status);
-    }
-
-    // Handle message sending
+    // Handle message form submission
     document.getElementById('message-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        const input = document.getElementById('message-input');
-        const message = input.value.trim();
-        
-        if (message && currentContact) {
-            socket.emit('send_message', {
-                receiver_phone: currentContact,
-                message: message
-            });
-            
-            input.value = '';
-        }
+        sendMessage();
     });
 
-    // Handle file upload
-    document.getElementById('file-upload').addEventListener('change', function(e) {
+    // Handle file attachment
+    attachBtn.addEventListener('click', () => fileUpload.click());
+    
+    fileUpload.addEventListener('change', function(e) {
         if (!currentContact) return;
         
         const file = e.target.files[0];
         if (!file) return;
+        
+        // Show upload progress
+        const progressDiv = document.createElement('div');
+        progressDiv.className = 'message message-sent';
+        progressDiv.innerHTML = `
+            <div class="message-bubble">
+                <div class="d-flex align-items-center">
+                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                    <span>Uploading ${file.name}...</span>
+                </div>
+            </div>
+        `;
+        chatMessages.appendChild(progressDiv);
+        scrollToBottom(chatMessages);
         
         const formData = new FormData();
         formData.append('file', file);
@@ -278,19 +426,38 @@
         })
         .then(response => response.json())
         .then(data => {
+            progressDiv.remove();
             if (data.success) {
                 console.log('File uploaded successfully');
-                // Clear the file input
-                this.value = '';
             } else {
-                alert(data.message);
+                showNotification(data.message, 'error');
             }
+            this.value = '';
+        })
+        .catch(error => {
+            progressDiv.remove();
+            console.error('Upload error:', error);
+            showNotification('Failed to upload file', 'error');
+            this.value = '';
         });
     });
 
-    // Handle adding new contacts
-    document.getElementById('add-contact-btn').addEventListener('click', function() {
-        const phone = document.getElementById('contact-phone').value.trim();
+    // Handle adding new contacts with validation
+    addContactBtn.addEventListener('click', function() {
+        const phone = contactPhoneInput.value.trim();
+        
+        if (!phone) {
+            showNotification('Please enter a phone number', 'warning');
+            return;
+        }
+        
+        if (!isValidPhoneNumber(phone)) {
+            showNotification('Please enter a valid phone number with country code', 'warning');
+            return;
+        }
+        
+        this.innerHTML = '<div class="spinner-border spinner-border-sm me-2" role="status"></div>Adding...';
+        this.disabled = true;
         
         fetch('/add_contact', {
             method: 'POST',
@@ -302,11 +469,85 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                location.reload();
+                showNotification('Contact added successfully!', 'success');
+                setTimeout(() => location.reload(), 1000);
             } else {
-                alert(data.message);
+                showNotification(data.message, 'error');
             }
+        })
+        .catch(error => {
+            console.error('Error adding contact:', error);
+            showNotification('Failed to add contact', 'error');
+        })
+        .finally(() => {
+            this.innerHTML = '<i class="bi bi-check-circle me-2"></i>Add Contact';
+            this.disabled = false;
         });
     });
+
+    // Utility functions
+    function formatLocalTime(timestamp) {
+        const date = new Date(timestamp.replace(' ', 'T') + 'Z');
+        const now = new Date();
+        const diff = now - date;
+        
+        if (diff < 60000) return 'now';
+        if (diff < 3600000) return Math.floor(diff / 60000) + 'm';
+        if (diff < 86400000) return date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        if (diff < 604800000) return date.toLocaleDateString([], {weekday: 'short'});
+        return date.toLocaleDateString([], {month: 'short', day: 'numeric'});
+    }
+
+    function isValidPhoneNumber(phone) {
+        return /^\+?[1-9]\d{1,14}$/.test(phone.replace(/\s/g, ''));
+    }
+
+    function showNotification(message, type) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = 'top: 100px; right: 20px; z-index: 9999; min-width: 300px;';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(alertDiv);
+        
+        setTimeout(() => alertDiv.remove(), 5000);
+    }
+
+    function showConnectionStatus(status, type) {
+        const statusDiv = document.createElement('div');
+        statusDiv.className = `alert alert-${type} position-fixed`;
+        statusDiv.style.cssText = 'top: 80px; left: 50%; transform: translateX(-50%); z-index: 9999; padding: 0.5rem 1rem;';
+        statusDiv.textContent = status;
+        document.body.appendChild(statusDiv);
+        
+        setTimeout(() => statusDiv.remove(), 3000);
+    }
+
+    function updateMessageStatus(statusElement, status) {
+        const icons = {
+            'sending': 'bi-clock',
+            'sent': 'bi-check',
+            'delivered': 'bi-check-all',
+            'read': 'bi-check-all text-primary',
+            'failed': 'bi-exclamation-circle text-danger'
+        };
+        
+        statusElement.innerHTML = `<i class="${icons[status] || 'bi-clock'}"></i>`;
+    }
+
+    // Initialize the app
+    document.addEventListener('DOMContentLoaded', function() {
+        updateAllContactStatuses();
+        
+        // Add some polish with entrance animations
+        setTimeout(() => {
+            document.querySelectorAll('.contact-item').forEach((item, index) => {
+                item.style.animationDelay = `${index * 0.1}s`;
+                item.classList.add('animate__fadeInLeft');
+            });
+        }, 500);
+    });
 </script>
-{% endblock %} 
+{% endblock %}
