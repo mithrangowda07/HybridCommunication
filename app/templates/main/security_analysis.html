@@ -1,508 +1,584 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-12">
-            <h1 class="display-5 fw-bold mb-4">
-                <i class="bi bi-shield-check me-2"></i>Security Analysis Dashboard
-            </h1>
-            
-            <!-- Security Overview Cards -->
-            <div class="row g-4 mb-4">
-                <div class="col-md-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <h3 class="h5 mb-3">Overall Security Score</h3>
-                            <div class="display-4 fw-bold text-success mb-2">95.0</div>
-                            <p class="text-muted mb-0">out of 100</p>
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+    body {
+        overflow-y: scroll;
+    }
+    .security-dashboard {
+        min-height: 100vh;
+        padding: 1rem;
+    }
+    .container-fluid {
+        height: auto;
+        overflow: visible;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .card {
+        margin-bottom: 1rem;
+    }
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+        .display-5 {
+            font-size: 1.8rem;
+        }
+        .card-body {
+            padding: 1rem;
+        }
+        .table-responsive {
+            margin: 0;
+            padding: 0;
+        }
+        .progress {
+            max-width: 100%;
+        }
+        .algorithm-score-circle {
+            width: 35px;
+            height: 35px;
+            font-size: 14px;
+        }
+        .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        .threat-details-btn {
+            width: auto;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+        canvas {
+            max-height: 250px !important;
+        }
+    }
+    /* Tablet Responsive Styles */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .display-5 {
+            font-size: 2rem;
+        }
+        canvas {
+            max-height: 300px !important;
+        }
+    }
+    /* Chart Container Styles */
+    .chart-container {
+        position: relative;
+        margin: auto;
+        height: 100%;
+        width: 100%;
+    }
+</style>
+
+<div class="security-dashboard">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <h1 class="display-5 fw-bold mb-4">
+                    <i class="bi bi-shield-check me-2"></i>Security Analysis Dashboard
+                </h1>
+                
+                <!-- Security Overview Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <h3 class="h5 mb-3">Overall Security Score</h3>
+                                <div class="display-4 fw-bold text-success mb-2">95.0</div>
+                                <p class="text-muted mb-0">out of 100</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <h3 class="h5 mb-3">Messages Encrypted</h3>
+                                <div class="display-4 fw-bold text-primary mb-2">4</div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <p class="text-success mt-2 mb-0">100% Encrypted</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body">
+                                <h3 class="h5 mb-3">Encryption Performance</h3>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span>Encryption:</span>
+                                    <span class="fw-bold">0.005s</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span>Decryption:</span>
+                                    <span class="fw-bold">0.003s</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>Key Generation:</span>
+                                    <span class="fw-bold">0.010s</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="col-md-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body text-center">
-                            <h3 class="h5 mb-3">Messages Encrypted</h3>
-                            <div class="display-4 fw-bold text-primary mb-2">4</div>
-                            <div class="progress" style="height: 6px;">
-                                <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                            <p class="text-success mt-2 mb-0">100% Encrypted</p>
-                        </div>
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary bg-opacity-10">
+                        <h2 class="h5 mb-0">
+                            <i class="bi bi-graph-up me-2"></i>Security Overview
+                        </h2>
                     </div>
-                </div>
-                
-                <div class="col-md-4">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body">
-                            <h3 class="h5 mb-3">Encryption Performance</h3>
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span>Encryption:</span>
-                                <span class="fw-bold">0.005s</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span>Decryption:</span>
-                                <span class="fw-bold">0.003s</span>
-                            </div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span>Key Generation:</span>
-                                <span class="fw-bold">0.010s</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary bg-opacity-10">
-                    <h2 class="h5 mb-0">
-                        <i class="bi bi-graph-up me-2"></i>Security Overview
-                    </h2>
-                </div>
-                <div class="card-body">
-                    <div class="row g-4">
-                        <div class="col-md-6 col-lg-3">
-                            <div class="card bg-success bg-opacity-10 border-success">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <i class="bi bi-check-circle-fill fs-2 text-success"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h3 class="h5 mb-1">Encryption Status</h3>
-                                            <p class="mb-0 fw-bold">Active</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6 col-lg-3">
-                            <div class="card bg-info bg-opacity-10 border-info">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <i class="bi bi-shield-lock fs-2 text-info"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h3 class="h5 mb-1">Last Scan</h3>
-                                            <p class="mb-0 fw-bold">{{ current_time }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6 col-lg-3">
-                            <div class="card bg-warning bg-opacity-10 border-warning">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <i class="bi bi-exclamation-triangle-fill fs-2 text-warning"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h3 class="h5 mb-1">Vulnerabilities</h3>
-                                            <p class="mb-0 fw-bold">2 Detected</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6 col-lg-3">
-                            <div class="card bg-danger bg-opacity-10 border-danger">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-shrink-0">
-                                            <i class="bi bi-bug-fill fs-2 text-danger"></i>
-                                        </div>
-                                        <div class="flex-grow-1 ms-3">
-                                            <h3 class="h5 mb-1">Threats Blocked</h3>
-                                            <p class="mb-0 fw-bold">14 Today</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- New Security Algorithm Analysis Section -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary bg-opacity-10">
-                    <h2 class="h5 mb-0">
-                        <i class="bi bi-graph-up-arrow me-2"></i>Security Algorithm Analysis
-                    </h2>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <canvas id="securityScoreChart" height="200"></canvas>
-                        </div>
-                        <div class="col-lg-4">
-                            <h3 class="h5 mb-3">Algorithm Components</h3>
-                            <div class="algorithm-metrics">
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="flex-shrink-0">
-                                        <div class="algorithm-score-circle bg-success">
-                                            <span>{{ security_score.encryption }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <h4 class="h6 mb-1">Encryption Strength</h4>
-                                        <div class="progress" style="height: 6px;">
-                                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ security_score.encryption }}%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="flex-shrink-0">
-                                        <div class="algorithm-score-circle bg-info">
-                                            <span>{{ security_score.network }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <h4 class="h6 mb-1">Network Security</h4>
-                                        <div class="progress" style="height: 6px;">
-                                            <div class="progress-bar bg-info" role="progressbar" style="width: {{ security_score.network }}%"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center mb-3">
-                                    <div class="flex-shrink-0">
-                                        <div class="algorithm-score-circle bg-warning">
-                                            <span>{{ security_score.access_control }}</span>
-                                        </div>
-                                    </div>
-                                    <div class="flex-grow-1 ms-3">
-                                        <h4 class="h6 mb-1">Access Control</h4>
-                                        <div class="progress" style="height: 6px;">
-                                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ security_score.access_control }}%"></div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <div class="col-md-6 col-lg-3">
+                                <div class="card bg-success bg-opacity-10 border-success">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0">
+                                                <i class="bi bi-check-circle-fill fs-2 text-success"></i>
+                                            </div>
+                                            <div class="flex-grow-1 ms-3">
+                                                <h3 class="h5 mb-1">Encryption Status</h3>
+                                                <p class="mb-0 fw-bold">Active</p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="mt-4">
-                                <h3 class="h5 mb-3">Algorithm Overview</h3>
-                                <div class="algorithm-info">
-                                    <p class="text-muted mb-2">Our security algorithm uses a multi-layered approach:</p>
-                                    <ul class="list-unstyled">
-                                        <li class="mb-2">
-                                            <i class="bi bi-shield-check text-success me-2"></i>
-                                            AES-256 encryption for data protection
-                                        </li>
-                                        <li class="mb-2">
-                                            <i class="bi bi-shield-check text-success me-2"></i>
-                                            Zero-knowledge proof verification
-                                        </li>
-                                        <li class="mb-2">
-                                            <i class="bi bi-shield-check text-success me-2"></i>
-                                            Real-time threat detection & response
-                                        </li>
-                                        <li>
-                                            <i class="bi bi-shield-check text-success me-2"></i>
-                                            Machine learning-based anomaly detection
-                                        </li>
+                            <div class="col-md-6 col-lg-3">
+                                <div class="card bg-info bg-opacity-10 border-info">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0">
+                                                <i class="bi bi-shield-lock fs-2 text-info"></i>
+                                            </div>
+                                            <div class="flex-grow-1 ms-3">
+                                                <h3 class="h5 mb-1">Last Scan</h3>
+                                                <p class="mb-0 fw-bold">{{ current_time }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 col-lg-3">
+                                <div class="card bg-warning bg-opacity-10 border-warning">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0">
+                                                <i class="bi bi-exclamation-triangle-fill fs-2 text-warning"></i>
+                                            </div>
+                                            <div class="flex-grow-1 ms-3">
+                                                <h3 class="h5 mb-1">Vulnerabilities</h3>
+                                                <p class="mb-0 fw-bold">2 Detected</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 col-lg-3">
+                                <div class="card bg-danger bg-opacity-10 border-danger">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0">
+                                                <i class="bi bi-bug-fill fs-2 text-danger"></i>
+                                            </div>
+                                            <div class="flex-grow-1 ms-3">
+                                                <h3 class="h5 mb-1">Threats Blocked</h3>
+                                                <p class="mb-0 fw-bold">14 Today</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- New Security Algorithm Analysis Section -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary bg-opacity-10">
+                        <h2 class="h5 mb-0">
+                            <i class="bi bi-graph-up-arrow me-2"></i>Security Algorithm Analysis
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <canvas id="securityScoreChart" height="200"></canvas>
+                            </div>
+                            <div class="col-lg-4">
+                                <h3 class="h5 mb-3">Algorithm Components</h3>
+                                <div class="algorithm-metrics">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="flex-shrink-0">
+                                            <div class="algorithm-score-circle bg-success">
+                                                <span>{{ security_score.encryption }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h4 class="h6 mb-1">Encryption Strength</h4>
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar bg-success" role="progressbar" style="width: {{ security_score.encryption }}%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="flex-shrink-0">
+                                            <div class="algorithm-score-circle bg-info">
+                                                <span>{{ security_score.network }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h4 class="h6 mb-1">Network Security</h4>
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar bg-info" role="progressbar" style="width: {{ security_score.network }}%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="flex-shrink-0">
+                                            <div class="algorithm-score-circle bg-warning">
+                                                <span>{{ security_score.access_control }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h4 class="h6 mb-1">Access Control</h4>
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar bg-warning" role="progressbar" style="width: {{ security_score.access_control }}%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <h3 class="h5 mb-3">Algorithm Overview</h3>
+                                    <div class="algorithm-info">
+                                        <p class="text-muted mb-2">Our security algorithm uses a multi-layered approach:</p>
+                                        <ul class="list-unstyled">
+                                            <li class="mb-2">
+                                                <i class="bi bi-shield-check text-success me-2"></i>
+                                                AES-256 encryption for data protection
+                                            </li>
+                                            <li class="mb-2">
+                                                <i class="bi bi-shield-check text-success me-2"></i>
+                                                Zero-knowledge proof verification
+                                            </li>
+                                            <li class="mb-2">
+                                                <i class="bi bi-shield-check text-success me-2"></i>
+                                                Real-time threat detection & response
+                                            </li>
+                                            <li>
+                                                <i class="bi bi-shield-check text-success me-2"></i>
+                                                Machine learning-based anomaly detection
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Message Security Statistics Section -->
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-primary bg-opacity-10">
+                        <h2 class="h5 mb-0">
+                            <i class="bi bi-envelope-check me-2"></i>Message Security Statistics
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <canvas id="messageStatsChart" height="200"></canvas>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="card border-0 bg-success bg-opacity-10">
+                                            <div class="card-body">
+                                                <h3 class="h6 mb-2">Messages Delivered</h3>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0">
+                                                        <i class="bi bi-check-circle-fill text-success fs-1"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <h4 class="display-6 mb-0">{{ message_stats.monthly.total_delivered }}</h4>
+                                                        <small class="text-muted">Last 30 days</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card border-0 bg-info bg-opacity-10">
+                                            <div class="card-body">
+                                                <h3 class="h6 mb-2">Encryption Success</h3>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="flex-shrink-0">
+                                                        <i class="bi bi-shield-check text-info fs-1"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1 ms-3">
+                                                        <h4 class="display-6 mb-0">{{ encryption_metrics.encryption_rate }}%</h4>
+                                                        <small class="text-muted">End-to-end encrypted</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <div class="card border-0 shadow-sm">
+                                            <div class="card-body">
+                                                <h3 class="h5 mb-3">Message Protection Features</h3>
+                                                <div class="row g-3">
+                                                    <div class="col-md-6">
+                                                        <div class="d-flex align-items-center p-3 border rounded bg-body-tertiary">
+                                                            <i class="bi bi-lock-fill text-primary fs-3 me-3"></i>
+                                                            <div>
+                                                                <h4 class="h6 mb-1">End-to-End Encryption</h4>
+                                                                <p class="small mb-0 text-muted">AES-256-GCM encryption for all messages</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="d-flex align-items-center p-3 border rounded bg-body-tertiary">
+                                                            <i class="bi bi-clock-history text-primary fs-3 me-3"></i>
+                                                            <div>
+                                                                <h4 class="h6 mb-1">Message Expiry</h4>
+                                                                <p class="small mb-0 text-muted">Optional auto-delete after specified time</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="d-flex align-items-center p-3 border rounded bg-body-tertiary">
+                                                            <i class="bi bi-fingerprint text-primary fs-3 me-3"></i>
+                                                            <div>
+                                                                <h4 class="h6 mb-1">Signature Verification</h4>
+                                                                <p class="small mb-0 text-muted">Digital signatures ensure authenticity</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="d-flex align-items-center p-3 border rounded bg-body-tertiary">
+                                                            <i class="bi bi-shield-lock text-primary fs-3 me-3"></i>
+                                                            <div>
+                                                                <h4 class="h6 mb-1">Forward Secrecy</h4>
+                                                                <p class="small mb-0 text-muted">Unique keys for each message session</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    <h4 class="alert-heading h5"><i class="bi bi-info-circle me-2"></i>Message Security Protocol</h4>
+                                    <p class="mb-0">Our messaging system implements multiple layers of security:</p>
+                                    <ul class="mb-0 mt-2">
+                                        <li>Messages are encrypted on the sender's device before transmission</li>
+                                        <li>Each message uses a unique encryption key derived from both parties' session keys</li>
+                                        <li>Message integrity is verified using HMAC-SHA256</li>
+                                        <li>Perfect Forward Secrecy ensures past messages remain secure even if keys are compromised</li>
+                                        <li>All metadata is encrypted and stored securely</li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Message Security Statistics Section -->
-            <div class="card shadow-sm mb-4">
-                <div class="card-header bg-primary bg-opacity-10">
-                    <h2 class="h5 mb-0">
-                        <i class="bi bi-envelope-check me-2"></i>Message Security Statistics
-                    </h2>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-6">
-                            <canvas id="messageStatsChart" height="200"></canvas>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="row g-4">
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-success bg-opacity-10">
-                                        <div class="card-body">
-                                            <h3 class="h6 mb-2">Messages Delivered</h3>
-                                            <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0">
-                                                    <i class="bi bi-check-circle-fill text-success fs-1"></i>
-                                                </div>
-                                                <div class="flex-grow-1 ms-3">
-                                                    <h4 class="display-6 mb-0">{{ message_stats.monthly.total_delivered }}</h4>
-                                                    <small class="text-muted">Last 30 days</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="card border-0 bg-info bg-opacity-10">
-                                        <div class="card-body">
-                                            <h3 class="h6 mb-2">Encryption Success</h3>
-                                            <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0">
-                                                    <i class="bi bi-shield-check text-info fs-1"></i>
-                                                </div>
-                                                <div class="flex-grow-1 ms-3">
-                                                    <h4 class="display-6 mb-0">{{ encryption_metrics.encryption_rate }}%</h4>
-                                                    <small class="text-muted">End-to-end encrypted</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-12">
-                                    <div class="card border-0 shadow-sm">
-                                        <div class="card-body">
-                                            <h3 class="h5 mb-3">Message Protection Features</h3>
-                                            <div class="row g-3">
-                                                <div class="col-md-6">
-                                                    <div class="d-flex align-items-center p-3 border rounded bg-body-tertiary">
-                                                        <i class="bi bi-lock-fill text-primary fs-3 me-3"></i>
-                                                        <div>
-                                                            <h4 class="h6 mb-1">End-to-End Encryption</h4>
-                                                            <p class="small mb-0 text-muted">AES-256-GCM encryption for all messages</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="d-flex align-items-center p-3 border rounded bg-body-tertiary">
-                                                        <i class="bi bi-clock-history text-primary fs-3 me-3"></i>
-                                                        <div>
-                                                            <h4 class="h6 mb-1">Message Expiry</h4>
-                                                            <p class="small mb-0 text-muted">Optional auto-delete after specified time</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="d-flex align-items-center p-3 border rounded bg-body-tertiary">
-                                                        <i class="bi bi-fingerprint text-primary fs-3 me-3"></i>
-                                                        <div>
-                                                            <h4 class="h6 mb-1">Signature Verification</h4>
-                                                            <p class="small mb-0 text-muted">Digital signatures ensure authenticity</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="d-flex align-items-center p-3 border rounded bg-body-tertiary">
-                                                        <i class="bi bi-shield-lock text-primary fs-3 me-3"></i>
-                                                        <div>
-                                                            <h4 class="h6 mb-1">Forward Secrecy</h4>
-                                                            <p class="small mb-0 text-muted">Unique keys for each message session</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header bg-primary bg-opacity-10">
+                                <h2 class="h5 mb-0">
+                                    <i class="bi bi-list-check me-2"></i>Security Checklist
+                                </h2>
                             </div>
+                            <div class="card-body">
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                            End-to-end encryption enabled
+                                        </div>
+                                        <span class="badge bg-success rounded-pill">Active</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                            Two-factor authentication
+                                        </div>
+                                        <span class="badge bg-success rounded-pill">Enabled</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+                                            Password strength
+                                        </div>
+                                        <span class="badge bg-warning rounded-pill">Medium</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="bi bi-x-circle-fill text-danger me-2"></i>
+                                            Session timeout
+                                        </div>
+                                        <span class="badge bg-danger rounded-pill">Disabled</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                            IP address monitoring
+                                        </div>
+                                        <span class="badge bg-success rounded-pill">Active</span>
+                                    </div>
                                 </div>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <button class="btn btn-primary btn-sm" title="Run Security Scan">
+                                    <i class="bi bi-arrow-repeat me-1"></i> Run Security Scan
+                                </button>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="row mt-4">
-                        <div class="col-12">
-                            <div class="alert alert-info">
-                                <h4 class="alert-heading h5"><i class="bi bi-info-circle me-2"></i>Message Security Protocol</h4>
-                                <p class="mb-0">Our messaging system implements multiple layers of security:</p>
-                                <ul class="mb-0 mt-2">
-                                    <li>Messages are encrypted on the sender's device before transmission</li>
-                                    <li>Each message uses a unique encryption key derived from both parties' session keys</li>
-                                    <li>Message integrity is verified using HMAC-SHA256</li>
-                                    <li>Perfect Forward Secrecy ensures past messages remain secure even if keys are compromised</li>
-                                    <li>All metadata is encrypted and stored securely</li>
-                                </ul>
+                    <div class="col-lg-6">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header bg-primary bg-opacity-10">
+                                <h2 class="h5 mb-0">
+                                    <i class="bi bi-activity me-2"></i>Threat Activity
+                                </h2>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row g-4">
-                <div class="col-lg-6">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-primary bg-opacity-10">
-                            <h2 class="h5 mb-0">
-                                <i class="bi bi-list-check me-2"></i>Security Checklist
-                            </h2>
-                        </div>
-                        <div class="card-body">
-                            <div class="list-group list-group-flush">
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <i class="bi bi-check-circle-fill text-success me-2"></i>
-                                        End-to-end encryption enabled
-                                    </div>
-                                    <span class="badge bg-success rounded-pill">Active</span>
-                                </div>
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <i class="bi bi-check-circle-fill text-success me-2"></i>
-                                        Two-factor authentication
-                                    </div>
-                                    <span class="badge bg-success rounded-pill">Enabled</span>
-                                </div>
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
-                                        Password strength
-                                    </div>
-                                    <span class="badge bg-warning rounded-pill">Medium</span>
-                                </div>
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <i class="bi bi-x-circle-fill text-danger me-2"></i>
-                                        Session timeout
-                                    </div>
-                                    <span class="badge bg-danger rounded-pill">Disabled</span>
-                                </div>
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <i class="bi bi-check-circle-fill text-success me-2"></i>
-                                        IP address monitoring
-                                    </div>
-                                    <span class="badge bg-success rounded-pill">Active</span>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Type</th>
+                                                <th>Date</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <i class="bi bi-exclamation-octagon-fill text-danger me-2"></i>
+                                                    Brute Force Attempt
+                                                </td>
+                                                <td>Today, 10:23 AM</td>
+                                                <td><span class="badge bg-success">Blocked</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-secondary threat-details-btn">
+                                                        Details
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <i class="bi bi-shield-exclamation text-warning me-2"></i>
+                                                    Suspicious Login
+                                                </td>
+                                                <td>Yesterday, 2:45 PM</td>
+                                                <td><span class="badge bg-success">Blocked</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-secondary threat-details-btn">
+                                                        Details
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <i class="bi bi-bug-fill text-danger me-2"></i>
+                                                    Malware Detected
+                                                </td>
+                                                <td>Yesterday, 9:12 AM</td>
+                                                <td><span class="badge bg-success">Removed</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-secondary threat-details-btn">
+                                                        Details
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <i class="bi bi-link-45deg text-info me-2"></i>
+                                                    Phishing Attempt
+                                                </td>
+                                                <td>2 days ago</td>
+                                                <td><span class="badge bg-success">Blocked</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-secondary threat-details-btn">
+                                                        Details
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card-footer bg-transparent">
-                            <button class="btn btn-primary btn-sm" title="Run Security Scan">
-                                <i class="bi bi-arrow-repeat me-1"></i> Run Security Scan
-                            </button>
                         </div>
                     </div>
                 </div>
                 
-                <div class="col-lg-6">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header bg-primary bg-opacity-10">
-                            <h2 class="h5 mb-0">
-                                <i class="bi bi-activity me-2"></i>Threat Activity
-                            </h2>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Type</th>
-                                            <th>Date</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <i class="bi bi-exclamation-octagon-fill text-danger me-2"></i>
-                                                Brute Force Attempt
-                                            </td>
-                                            <td>Today, 10:23 AM</td>
-                                            <td><span class="badge bg-success">Blocked</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-secondary threat-details-btn">
-                                                    Details
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <i class="bi bi-shield-exclamation text-warning me-2"></i>
-                                                Suspicious Login
-                                            </td>
-                                            <td>Yesterday, 2:45 PM</td>
-                                            <td><span class="badge bg-success">Blocked</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-secondary threat-details-btn">
-                                                    Details
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <i class="bi bi-bug-fill text-danger me-2"></i>
-                                                Malware Detected
-                                            </td>
-                                            <td>Yesterday, 9:12 AM</td>
-                                            <td><span class="badge bg-success">Removed</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-secondary threat-details-btn">
-                                                    Details
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <i class="bi bi-link-45deg text-info me-2"></i>
-                                                Phishing Attempt
-                                            </td>
-                                            <td>2 days ago</td>
-                                            <td><span class="badge bg-success">Blocked</span></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-secondary threat-details-btn">
-                                                    Details
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                <div class="card shadow-sm mt-4">
+                    <div class="card-header bg-primary bg-opacity-10">
+                        <h2 class="h5 mb-0">
+                            <i class="bi bi-graph-up-arrow me-2"></i>Security Recommendations
+                        </h2>
                     </div>
-                </div>
-            </div>
-            
-            <div class="card shadow-sm mt-4">
-                <div class="card-header bg-primary bg-opacity-10">
-                    <h2 class="h5 mb-0">
-                        <i class="bi bi-graph-up-arrow me-2"></i>Security Recommendations
-                    </h2>
-                </div>
-                <div class="card-body">
-                    <div class="alert alert-warning mb-4">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        <strong>Action Required:</strong> Your password strength is medium. Consider updating to a stronger password.
-                    </div>
-                    
-                    <div class="row g-4">
-                        <div class="col-md-6">
-                            <div class="card h-100 border-0 shadow-sm">
-                                <div class="card-body">
-                                    <h3 class="h5 mb-3">
-                                        <i class="bi bi-shield-lock text-primary me-2"></i>
-                                        Enable Session Timeout
-                                    </h3>
-                                    <p class="text-muted">
-                                        Automatically log out after periods of inactivity to prevent unauthorized access.
-                                    </p>
-                                    <button class="btn btn-outline-primary btn-sm" title="Configure Session Timeout">
-                                        Configure Settings
-                                    </button>
-                                </div>
-                            </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning mb-4">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <strong>Action Required:</strong> Your password strength is medium. Consider updating to a stronger password.
                         </div>
                         
-                        <div class="col-md-6">
-                            <div class="card h-100 border-0 shadow-sm">
-                                <div class="card-body">
-                                    <h3 class="h5 mb-3">
-                                        <i class="bi bi-device-ssd text-primary me-2"></i>
-                                        Device Management
-                                    </h3>
-                                    <p class="text-muted">
-                                        Review and manage devices that have access to your account.
-                                    </p>
-                                    <button class="btn btn-outline-primary btn-sm" title="View Devices">
-                                        View Devices
-                                    </button>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <h3 class="h5 mb-3">
+                                            <i class="bi bi-shield-lock text-primary me-2"></i>
+                                            Enable Session Timeout
+                                        </h3>
+                                        <p class="text-muted">
+                                            Automatically log out after periods of inactivity to prevent unauthorized access.
+                                        </p>
+                                        <button class="btn btn-outline-primary btn-sm" title="Configure Session Timeout">
+                                            Configure Settings
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <div class="card-body">
+                                        <h3 class="h5 mb-3">
+                                            <i class="bi bi-device-ssd text-primary me-2"></i>
+                                            Device Management
+                                        </h3>
+                                        <p class="text-muted">
+                                            Review and manage devices that have access to your account.
+                                        </p>
+                                        <button class="btn btn-outline-primary btn-sm" title="View Devices">
+                                            View Devices
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -512,9 +588,7 @@
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Animation for cards on page load
@@ -920,6 +994,106 @@
                     }
                 }
             }
+        });
+
+        // Make charts responsive
+        Chart.defaults.responsive = true;
+        Chart.defaults.maintainAspectRatio = false;
+
+        // Update chart options for better mobile display
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: window.innerWidth < 768 ? 'bottom' : 'top',
+                    labels: {
+                        boxWidth: window.innerWidth < 768 ? 12 : 40,
+                        padding: window.innerWidth < 768 ? 10 : 20
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        font: {
+                            size: window.innerWidth < 768 ? 10 : 12
+                        }
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: window.innerWidth < 768 ? 10 : 12
+                        }
+                    }
+                }
+            }
+        };
+
+        // Initialize charts with responsive options
+        const securityCtx = document.getElementById('securityScoreChart').getContext('2d');
+        const messageCtx = document.getElementById('messageStatsChart').getContext('2d');
+
+        new Chart(securityCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [
+                    {
+                        label: 'Overall Security Score',
+                        data: [82, 85, 88, 86, 89, 92],
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Threat Detection Rate',
+                        data: [75, 78, 82, 85, 88, 90],
+                        borderColor: '#198754',
+                        backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: chartOptions
+        });
+
+        new Chart(messageCtx, {
+            type: 'bar',
+            data: {
+                labels: messageStats.map(stat => stat.date),
+                datasets: [
+                    {
+                        label: 'Messages Sent',
+                        data: messageStats.map(stat => stat.sent),
+                        backgroundColor: 'rgba(13, 110, 253, 0.5)',
+                        borderColor: 'rgba(13, 110, 253, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Messages Delivered',
+                        data: messageStats.map(stat => stat.delivered),
+                        backgroundColor: 'rgba(25, 135, 84, 0.5)',
+                        borderColor: 'rgba(25, 135, 84, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: chartOptions
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const legend = Chart.defaults.plugins.legend;
+            legend.position = window.innerWidth < 768 ? 'bottom' : 'top';
         });
     });
 
