@@ -9,8 +9,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --wa-green: #25d366;
-            --wa-green-dark: #128c7e;
+            --wa-green:rgb(4, 34, 15);
+            --wa-green-dark:rgb(65, 167, 114);
             --wa-green-light: #dcf8c6;
             --wa-blue: #34b7f1;
             --wa-dark-bg: #0b141a;
@@ -145,6 +145,7 @@
             height: calc(100vh - 76px);
             display: flex;
             background: var(--bg-primary);
+            position: relative;
         }
 
         /* Contacts sidebar */
@@ -505,6 +506,51 @@
             margin: 1rem;
             border: none;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Floating action button for mobile */
+        .fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--wa-green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+        }
+
+        /* Show only on mobile */
+        @media (min-width: 769px) {
+            .fab {
+                display: none;
+            }
+        }
+
+        /* File preview modal styles */
+        #filePreviewModal .modal-content {
+            background-color: rgba(0,0,0,0.8) !important;
+        }
+
+        #filePreviewModal .btn-close-white {
+            filter: invert(1);
+        }
+
+        #filePreviewImage {
+            max-width: 100%;
+            border-radius: 8px;
         }
 
         /* Responsive design */
